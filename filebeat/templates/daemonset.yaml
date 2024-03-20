@@ -100,15 +100,15 @@ spec:
         hostPath:
           path: {{ .Values.hostPathRoot }}/{{ template "filebeat.fullname" . }}-{{ .Release.Namespace }}-data
           type: DirectoryOrCreate
-      - name: varlibdockercontainers
+      - name: varlibcontainerd
         hostPath:
-          path: /var/lib/docker/containers
+          path: /var/log/containers
       - name: varlog
         hostPath:
           path: /var/log
-      - name: varrundockersock
+      - name: varruncontainerdsock
         hostPath:
-          path: /var/run/docker.sock
+          path: /run/containerd/containerd.sock
       {{- if .Values.extraVolumes | default .Values.daemonset.extraVolumes }}
 {{ toYaml ( .Values.extraVolumes | default .Values.daemonset.extraVolumes )  | indent 6 }}
       {{- end }}
@@ -181,16 +181,16 @@ spec:
         {{- end }}
         - name: data
           mountPath: /usr/share/filebeat/data
-        - name: varlibdockercontainers
-          mountPath: /var/lib/docker/containers
+        - name: varlibcontainerd
+          mountPath: /var/log/containers
           readOnly: true
         - name: varlog
           mountPath: /var/log
           readOnly: true
         # Necessary when using autodiscovery; avoid mounting it otherwise
         # See: https://www.elastic.co/guide/en/beats/filebeat/master/configuration-autodiscover.html
-        - name: varrundockersock
-          mountPath: /var/run/docker.sock
+        - name: varruncontainerdsock
+          mountPath: /run/containerd/containerd.sock
           readOnly: true
         {{- if .Values.extraVolumeMounts | default .Values.daemonset.extraVolumeMounts }}
 {{ toYaml (.Values.extraVolumeMounts | default .Values.daemonset.extraVolumeMounts ) | indent 8 }}
